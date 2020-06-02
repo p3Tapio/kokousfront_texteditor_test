@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react'
-import { createEditor, Editor, Transforms } from 'slate'
+import { createEditor } from 'slate'
 import { Slate, Editable, withReact } from 'slate-react'
+
+// TODO:  gettejä ja posteja jostain
 
 const TextEditor = () => {
 
@@ -8,18 +10,30 @@ const TextEditor = () => {
 
     const now = Date();
     const pvmForm = { month: 'numeric', day: 'numeric', year: 'numeric' };
-    const yhd = 'Yhdistys Abc'  // GET jostain 
+    const yhd = 'Yhdistys Abc' 
+    const kokousNo = 7
+    const ehdotus = "Tähän tulee gettillä sisältöä vaikka tai PJ:n alustusta"
+
     const [value, setValue] = useState(JSON.parse(localStorage.getItem('content')) || [
         {
             type: 'header',
             children: [
-                { text: new Date(now).toLocaleDateString('fi-FI', pvmForm) },
-                { text: `\n${yhd}` }
+                { text: `${yhd}\t\t\t` + new Date(now).toLocaleDateString('fi-FI', pvmForm) },
+                { text: `\nKokousnumero ${kokousNo}` },
+                { text: '\n' }
+            ]
+        },
+        {
+            type: 'paragraph',
+            children: [
+                { text: `${ehdotus}` }
             ]
         }
     ])
     const send = () => {
         console.log('localStorage.getItem("content")', localStorage.getItem("content"))
+        localStorage.removeItem('content')
+        window.location.reload()
     }
 
     return (
@@ -33,19 +47,7 @@ const TextEditor = () => {
                         const content = JSON.stringify(value)
                         localStorage.setItem('content', content)
                     }}>
-                    <Editable
-                        onKeyDown={ev => {
-                            if (ev.key === '+' && ev.ctrlKey) {
-                                ev.preventDefault()
-                                const [match] = Editor.nodes(editor, { match: n => n.type === 'code' })
-                                Transforms.setNodes(
-                                    editor,
-                                    { type: match ? 'paragraph' : 'code' },
-                                    { match: n => Editor.isBlock(editor, n) }
-                                )
-                            }
-                        }}
-                    />
+                    <Editable />
                 </Slate>
             </div>
             <button className="mt-4 btn btn-outline-primary" onClick={send}>Tallenna</button> {/*  onclick for commit */}
